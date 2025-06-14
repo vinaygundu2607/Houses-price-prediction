@@ -1,0 +1,25 @@
+2025-06-13 23:26:13,154 - INFO - Model loaded successfully
+2025-06-13 23:26:13,174 - INFO - Serving on http://0.0.0.0:8000
+2025-06-13 23:27:29,576 - INFO - Model loaded successfully
+2025-06-13 23:27:29,590 - INFO - Serving on http://0.0.0.0:8000
+2025-06-13 23:27:35,141 - INFO - Home page accessed
+2025-06-13 23:28:30,929 - INFO - Model loaded successfully
+2025-06-13 23:28:30,940 - INFO - Serving on http://0.0.0.0:8000
+2025-06-13 23:29:25,243 - WARNING - Failed admin login attempt: Vinayvinnu
+2025-06-13 23:40:53,009 - INFO - Home page accessed
+2025-06-13 23:42:40,490 - INFO - Home page accessed
+2025-06-13 23:42:40,882 - INFO - Home page accessed
+2025-06-14 00:05:48,486 - INFO - Home page accessed
+2025-06-14 00:06:25,552 - INFO - Prediction request received - Square Feet: 1200.0, Bedrooms: 4, Bathrooms: 2
+2025-06-14 00:06:25,672 - INFO - Prediction successful - Predicted Price: $173,223.25
+2025-06-14 00:12:19,327 - INFO - Home page accessed
+2025-06-14 00:13:57,226 - INFO - Home page accessed
+2025-06-14 00:14:05,300 - INFO - Home page accessed
+2025-06-14 00:14:10,021 - INFO - Home page accessed
+2025-06-14 00:15:58,706 - INFO - Home page accessed
+2025-06-14 00:17:56,356 - INFO - Home page accessed
+2025-06-14 00:18:42,153 - INFO - Home page accessed
+2025-06-14 00:19:42,807 - INFO - Home page accessed
+2025-06-14 00:21:47,995 - INFO - Home page accessed
+2025-06-14 00:23:10,525 - ERROR - 404 error: http://localhost:8000/.well-known/appspecific/com.chrome.devtools.json
+2025-06-14 00:25:07,114 - INFO - Home page accessed
