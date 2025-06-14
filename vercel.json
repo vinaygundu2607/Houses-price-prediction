@@ -1,5 +1,7 @@
 {
     "version": 2,
+    "buildCommand": "pip install -r requirements.txt",
+    "outputDirectory": ".",
     "builds": [
         {
             "src": "app.py",
