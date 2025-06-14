@@ -5,9 +5,7 @@
             "src": "app.py",
             "use": "@vercel/python",
             "config": {
-                "runtime": "python3.11",
-                "buildCommand": "pip install --upgrade pip setuptools wheel && pip install -r requirements.txt",
-                "installCommand": "pip install --upgrade pip setuptools wheel"
+                "runtime": "python3.12"
             }
         }
     ],
