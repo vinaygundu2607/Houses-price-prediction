@@ -1,15 +1,9 @@
 {
     "version": 2,
-    "buildCommand": "pip install --upgrade pip setuptools wheel && pip install -r requirements.txt",
-    "outputDirectory": ".",
     "builds": [
         {
             "src": "app.py",
-            "use": "@vercel/python",
-            "config": {
-                "runtime": "python3.10",
-                "installCommand": "pip install --upgrade pip setuptools wheel"
-            }
+            "use": "@vercel/python"
         }
     ],
     "routes": [
@@ -17,10 +11,5 @@
             "src": "/(.*)",
             "dest": "app.py"
         }
-    ],
-    "functions": {
-        "api/**": {
-            "excludeFiles": "{.next,*.cache,node_modules,public,app}/**"
-        }
-    }
+    ]
 }
