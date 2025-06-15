@@ -29,3 +29,5 @@ greenlet==3.0.3
 # Date/Time dependencies
 pytz==2024.1
 python-dateutil==2.8.2
+python-3.10.13
+
