@@ -3,9 +3,10 @@ services:
     name: houses-price-prediction
     env: python
     buildCommand: |
-      pip install --upgrade pip
+      python -m pip install --upgrade pip
       pip install -r requirements.txt
-    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 app:app
+      python -c "import nltk; nltk.download('punkt')"
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 1 --threads 2 --timeout 120 --access-logfile - --error-logfile - app:app
     plan: free
     region: oregon
     envVars:
@@ -34,4 +35,6 @@ services:
       - key: DEBUG
         value: "false"
       - key: TESTING
-        value: "false" 
+        value: "false"
+      - key: PYTHONUNBUFFERED
+        value: "1" 
