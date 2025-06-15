@@ -10,7 +10,7 @@ services:
     region: oregon
     envVars:
       - key: PYTHON_VERSION
-        value: 3.13.4
+        value: 3.11.8
       - key: FLASK_ENV
         value: production
       - key: FLASK_APP

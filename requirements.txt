@@ -1,7 +1,7 @@
 # Build dependencies
 setuptools==69.2.0
 wheel==0.42.0
-Cython==3.0.10
+Cython==3.0.6
 
 # Core dependencies
 python-dotenv==1.0.1
@@ -12,9 +12,9 @@ SQLAlchemy==2.0.27
 Flask-SQLAlchemy==3.1.1
 
 # Data processing dependencies
-numpy==1.26.4
-pandas==2.1.4
-scikit-learn==1.4.1
+numpy==1.24.3
+pandas==2.0.3
+scikit-learn==1.3.2
 joblib==1.3.2
 
 # Flask dependencies
