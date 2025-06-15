@@ -144,4 +144,9 @@ def create_app(config_name='default'):
 
     return app
 
-app = create_app(os.getenv('FLASK_ENV', 'production')) 
+if __name__ == '__main__':
+    port = int(os.environ.get("PORT", 10000))
+    app = create_app(os.getenv('FLASK_ENV', 'production'))
+    app.run(host='0.0.0.0', port=port)
+else:
+    app = create_app(os.getenv('FLASK_ENV', 'production')) 

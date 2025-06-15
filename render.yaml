@@ -3,9 +3,15 @@ services:
     name: houses-price-prediction
     env: python
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
     plan: free
     region: oregon
     envVars:
       - key: PYTHON_VERSION
-        value: 3.13.4 
+        value: 3.13.4
+      - key: FLASK_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: SECRET_KEY
+        generateValue: true 
