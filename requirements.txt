@@ -5,4 +5,4 @@ pandas
 joblib
 flask_sqlalchemy
 Werkzeug
-python
+python==3.10
