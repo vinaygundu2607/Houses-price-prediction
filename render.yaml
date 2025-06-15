@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: houses-price-prediction
+    name: houses-price-prediction-7
     runtime: python
     buildCommand: |
       python -m pip install --upgrade pip
@@ -36,4 +36,6 @@ services:
       - key: TESTING
         value: "false"
       - key: PYTHONUNBUFFERED
-        value: "1" 
+        value: "1"
+      - key: GUNICORN_CMD_ARGS
+        value: "--workers=1 --threads=2 --timeout=120" 
