@@ -2,8 +2,10 @@ services:
   - type: web
     name: houses-price-prediction
     env: python
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+    startCommand: gunicorn --bind 0.0.0.0:$PORT --workers 2 --threads 2 --timeout 120 app:app
     plan: free
     region: oregon
     envVars:
@@ -11,7 +13,25 @@ services:
         value: 3.13.4
       - key: FLASK_ENV
         value: production
+      - key: FLASK_APP
+        value: app.py
       - key: PORT
         value: 10000
       - key: SECRET_KEY
-        generateValue: true 
+        generateValue: true
+      - key: DATABASE_URL
+        value: sqlite:///users.db
+      - key: MODEL_PATH
+        value: model.pkl
+      - key: SESSION_COOKIE_SECURE
+        value: "true"
+      - key: REMEMBER_COOKIE_SECURE
+        value: "true"
+      - key: SESSION_COOKIE_HTTPONLY
+        value: "true"
+      - key: REMEMBER_COOKIE_HTTPONLY
+        value: "true"
+      - key: DEBUG
+        value: "false"
+      - key: TESTING
+        value: "false" 

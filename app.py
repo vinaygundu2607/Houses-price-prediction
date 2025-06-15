@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 import numpy as np
 import joblib
 import os
@@ -7,13 +7,27 @@ import pandas as pd
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import logging
+import sys
+from werkzeug.exceptions import HTTPException
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('app.log')
+    ]
+)
+logger = logging.getLogger(__name__)
 
 def create_app(config_name='default'):
     app = Flask(__name__)
     app.config.from_object(config[config_name])
     
     # Database configuration
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///users.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'your-secret-key')
     
@@ -33,52 +47,84 @@ def create_app(config_name='default'):
         def check_password(self, password):
             return check_password_hash(self.password_hash, password)
 
-    # Create database tables
-    with app.app_context():
-        db.create_all()
+    # Initialize database
+    try:
+        with app.app_context():
+            db.create_all()
+            logger.info("Database initialized successfully")
+    except Exception as e:
+        logger.error(f"Database initialization error: {str(e)}")
+        # Don't raise the error, allow the app to start even if DB fails
 
     # Load the trained model
     try:
         model = joblib.load("model.pkl")
+        logger.info("Model loaded successfully")
     except Exception as e:
-        print(f"Error loading model: {e}")
+        logger.error(f"Error loading model: {str(e)}")
         model = None
+
+    @app.route('/health')
+    def health_check():
+        """Health check endpoint for monitoring"""
+        try:
+            # Check database connection
+            db.session.execute('SELECT 1')
+            db_status = "healthy"
+        except Exception as e:
+            logger.error(f"Database health check failed: {str(e)}")
+            db_status = "unhealthy"
+
+        # Check model status
+        model_status = "healthy" if model is not None else "unhealthy"
+
+        return jsonify({
+            "status": "healthy" if db_status == "healthy" and model_status == "healthy" else "degraded",
+            "database": db_status,
+            "model": model_status,
+            "timestamp": datetime.utcnow().isoformat()
+        })
 
     @app.route('/')
     def home():
-        return render_template("index.html")
+        try:
+            return render_template("index.html")
+        except Exception as e:
+            logger.error(f"Error rendering home page: {str(e)}")
+            return render_template("500.html"), 500
 
     @app.route('/signup', methods=['GET', 'POST'])
     def signup():
         if request.method == 'POST':
-            username = request.form.get('username')
-            email = request.form.get('email')
-            password = request.form.get('password')
-            confirm_password = request.form.get('confirm_password')
-
-            # Validation
-            if not all([username, email, password, confirm_password]):
-                return render_template('signup.html', error='All fields are required')
-
-            if password != confirm_password:
-                return render_template('signup.html', error='Passwords do not match')
-
-            # Check if username or email already exists
-            if User.query.filter_by(username=username).first():
-                return render_template('signup.html', error='Username already exists')
-            if User.query.filter_by(email=email).first():
-                return render_template('signup.html', error='Email already registered')
-
-            # Create new user
-            new_user = User(username=username, email=email)
-            new_user.set_password(password)
-
             try:
+                username = request.form.get('username')
+                email = request.form.get('email')
+                password = request.form.get('password')
+                confirm_password = request.form.get('confirm_password')
+
+                # Validation
+                if not all([username, email, password, confirm_password]):
+                    return render_template('signup.html', error='All fields are required')
+
+                if password != confirm_password:
+                    return render_template('signup.html', error='Passwords do not match')
+
+                # Check if username or email already exists
+                if User.query.filter_by(username=username).first():
+                    return render_template('signup.html', error='Username already exists')
+                if User.query.filter_by(email=email).first():
+                    return render_template('signup.html', error='Email already registered')
+
+                # Create new user
+                new_user = User(username=username, email=email)
+                new_user.set_password(password)
+
                 db.session.add(new_user)
                 db.session.commit()
                 return render_template('signup.html', success='Account created successfully! You can now login.')
             except Exception as e:
                 db.session.rollback()
+                logger.error(f"Error during signup: {str(e)}")
                 return render_template('signup.html', error='An error occurred. Please try again.')
 
         return render_template('signup.html')
@@ -86,6 +132,7 @@ def create_app(config_name='default'):
     @app.route('/predict', methods=["POST"])
     def predict():
         if model is None:
+            logger.error("Prediction attempted with no model loaded")
             return render_template(
                 "index.html",
                 prediction_text="Error: Model not loaded. Please contact administrator.",
@@ -111,6 +158,7 @@ def create_app(config_name='default'):
             
             # Make prediction
             prediction = model.predict(input_data)[0]
+            logger.info(f"Successful prediction: {prediction}")
 
             return render_template(
                 "index.html", 
@@ -122,12 +170,14 @@ def create_app(config_name='default'):
                 }
             )
         except ValueError as ve:
+            logger.warning(f"Invalid input during prediction: {str(ve)}")
             return render_template(
                 "index.html",
                 prediction_text="Invalid input. Please enter valid numbers.",
                 error=str(ve)
             )
         except Exception as e:
+            logger.error(f"Error during prediction: {str(e)}")
             return render_template(
                 "index.html",
                 prediction_text="An error occurred during prediction.",
@@ -136,10 +186,19 @@ def create_app(config_name='default'):
 
     @app.errorhandler(404)
     def not_found_error(error):
+        logger.warning(f"404 error: {request.url}")
         return render_template('404.html'), 404
 
     @app.errorhandler(500)
     def internal_error(error):
+        logger.error(f"500 error: {str(error)}")
+        return render_template('500.html'), 500
+
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        logger.error(f"Unhandled exception: {str(e)}")
+        if isinstance(e, HTTPException):
+            return e
         return render_template('500.html'), 500
 
     return app
