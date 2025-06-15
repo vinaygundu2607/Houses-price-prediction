@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: houses-price-prediction
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    plan: free
+    region: oregon
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.4 
