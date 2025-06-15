@@ -1,33 +1,8 @@
-# Build dependencies
-setuptools==69.2.0
-wheel==0.42.0
-Cython==3.0.6
-
-# Core dependencies
-python-dotenv==1.0.1
-Flask==2.3.3
-Werkzeug==2.3.7
-gunicorn==21.2.0
-SQLAlchemy==2.0.27
-Flask-SQLAlchemy==3.1.1
-
-# Data processing dependencies
+Flask==2.3.2
+gunicorn
 numpy==1.24.3
-pandas==2.0.3
-scikit-learn==1.3.2
-joblib==1.3.2
-
-# Flask dependencies
-click==8.1.7
-itsdangerous==2.1.2
-Jinja2==3.1.3
-MarkupSafe==2.1.5
-
-# Database dependencies
-greenlet==3.0.3
-
-# Date/Time dependencies
-pytz==2024.1
-python-dateutil==2.8.2
-python-3.10.13
-
+pandas
+joblib
+flask_sqlalchemy
+Werkzeug
+python
